@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Mi perfil{% endblock %}
+{% block content %}
+<div class="container">
+
+  <div class="profile-header">
+    <div class="profile-avatar-section">
+      {% if current_user.foto|default('') %}
+        <img src="{{ url_for('static', filename='uploads/' + current_user.foto) }}"
+             alt="{{ current_user.nick }}" class="profile-avatar-lg">
+      {% else %}
+        <div class="profile-avatar-placeholder-lg">{{ current_user.nick[0]|upper }}</div>
+      {% endif %}
+      <div>
+        <h1 style="margin-bottom:0.25rem">{{ current_user.nick }}
+          {% if current_user.es_admin %}
+            <span class="badge badge-admin" style="font-size:0.65rem; vertical-align:middle">ADMIN</span>
+          {% endif %}
+        </h1>
+        <p style="color:var(--text-2); margin-bottom:0.75rem">{{ current_user.email }}</p>
+        <a href="{{ url_for('usuario.editar_perfil') }}" class="btn btn-secondary btn-sm">Editar perfil</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

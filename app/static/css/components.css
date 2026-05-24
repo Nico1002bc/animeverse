@@ -1,0 +1,84 @@
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.badge-admin { background: var(--accent-dim); color: #fb923c; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.1s;
+  text-decoration: none;
+  line-height: 1;
+}
+.btn:active { transform: scale(0.98); }
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #ea6c10; color: #fff; }
+
+.btn-secondary {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--border-2); }
+
+.btn-danger {
+  background: rgba(239,68,68,0.07);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.18);
+}
+.btn-danger:hover { background: rgba(239,68,68,0.14); }
+
+.btn-sm { padding: 0.3rem 0.7rem; font-size: 0.77rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 540px;
+}
+
+.form-group { margin-bottom: 1.1rem; position: relative; }
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-control {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 0.58rem 0.85rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.form-control::placeholder { color: var(--text-3); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Editar perfil{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Editar perfil</h1>
+    <p>Modifica tu información personal.</p>
+  </div>
+
+  <div class="form-card" style="max-width:560px">
+    <form method="POST" action="{{ url_for('usuario.editar_perfil') }}" enctype="multipart/form-data">
+
+      {# ---- Foto de perfil ---- #}
+      <div class="form-group" style="text-align:center">
+        <label class="form-label">Foto de perfil</label>
+        <div class="profile-photo-edit">
+          {% if current_user.foto|default('') %}
+            <img src="{{ url_for('static', filename='uploads/' + current_user.foto) }}"
+                 alt="Foto de {{ current_user.nick }}" class="profile-photo-preview" id="foto-preview">
+          {% else %}
+            <div class="profile-photo-placeholder-lg" id="foto-placeholder">
+              {{ current_user.nick[0]|upper }}
+            </div>
+            <img src="" alt="Vista previa" class="profile-photo-preview" id="foto-preview" style="display:none">
+          {% endif %}
+        </div>
+        <div style="display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem; flex-wrap:wrap">
+          <label for="foto" class="btn btn-secondary btn-sm" style="cursor:pointer; margin:0">
+            Cambiar foto
+          </label>
+          <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
+          {% if current_user.foto|default('') %}
+            <label class="btn btn-danger btn-sm" style="cursor:pointer; margin:0">
+              Eliminar foto
+              <input type="checkbox" name="eliminar_foto" value="1" style="display:none"
+                     id="eliminar-foto-check">
+            </label>
+          {% endif %}
+        </div>
+        <p style="font-size:0.75rem; color:var(--text-3); margin-top:0.4rem">
+          Formatos: PNG, JPG, GIF, WebP. Máximo 2 MB.
+        </p>
+      </div>
+
+      <hr class="divider">
+
+      {# ---- Nick ---- #}
+      <div class="form-group">
+        <label class="form-label" for="nick">Nombre de usuario</label>
+        <input id="nick" name="nick" type="text" class="form-control"
+               value="{{ current_user.nick }}" required>
+      </div>
+
+      {# ---- Email (solo lectura) ---- #}
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input id="email" type="email" class="form-control" value="{{ current_user.email }}"
+               disabled style="opacity:0.5">
+        <p style="font-size:0.75rem; color:var(--text-3); margin-top:0.3rem">
+          El email no se puede modificar.
+        </p>
+      </div>
+
+      <hr class="divider">
+
+      {# ---- Cambio de contraseña ---- #}
+      <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:1rem; font-weight:600">
+        Cambiar contraseña <span style="font-weight:400; color:var(--text-3)">(opcional)</span>
+      </p>
+
+      <div class="form-group">
+        <label class="form-label" for="password_actual">Contraseña actual</label>
+        <input id="password_actual" name="password_actual" type="password" class="form-control"
+               placeholder="••••••••">
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+        <div class="form-group">
+          <label class="form-label" for="password_nueva">Nueva contraseña</label>
+          <input id="password_nueva" name="password_nueva" type="password" class="form-control"
+                 placeholder="Mín. 6 caracteres" minlength="6">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password_confirm">Repetir nueva</label>
+          <input id="password_confirm" name="password_confirm" type="password" class="form-control"
+                 placeholder="••••••••">
+        </div>
+      </div>
+
+      <div style="display:flex; gap:0.75rem; margin-top:0.5rem">
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a href="{{ url_for('usuario.perfil') }}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Vista previa de la imagen seleccionada
+  document.getElementById('foto')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const preview = document.getElementById('foto-preview');
+        const placeholder = document.getElementById('foto-placeholder');
+        preview.src = ev.target.result;
+        preview.style.display = 'block';
+        if (placeholder) placeholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Toggle de eliminar foto
+  document.getElementById('eliminar-foto-check')?.addEventListener('change', function() {
+    const preview = document.getElementById('foto-preview');
+    const placeholder = document.getElementById('foto-placeholder');
+    if (this.checked) {
+      if (preview) preview.style.opacity = '0.3';
+    } else {
+      if (preview) preview.style.opacity = '1';
+    }
+  });
+</script>
+{% endblock %}

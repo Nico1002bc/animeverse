@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+<div class="auth-split">
+  <div class="auth-panel">
+    <div class="auth-form-wrap">
+      <h1 class="auth-title">Bienvenido</h1>
+      <p class="auth-subtitle">Inicia sesión para acceder a tu catálogo de anime.</p>
+
+      <form method="POST" action="{{ url_for('usuario.login') }}">
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input id="email" name="email" type="email" class="form-control"
+                 placeholder="tu@email.com" required autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Contraseña</label>
+          <input id="password" name="password" type="password" class="form-control"
+                 placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:0.5rem">
+          Iniciar sesión
+        </button>
+      </form>
+
+      <hr class="divider">
+      <p style="text-align:center; font-size:0.875rem; color:var(--text-2)">
+        ¿Sin cuenta? <a href="{{ url_for('usuario.registro') }}">Regístrate aquí</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="auth-deco">
+    <div class="auth-deco-grid"></div>
+    <div class="auth-deco-glow"></div>
+    <div class="auth-deco-content">
+      <div class="auth-deco-brand">Ani<span>Verse</span></div>
+      <p class="auth-deco-tagline">Tu catálogo personal de anime.<br>Guarda, valora y comparte.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

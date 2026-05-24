@@ -1,0 +1,8 @@
+{# ── AniVerse — Jinja2 Component Macros ────────────── #}
+
+{% macro page_header(title, desc=None) %}
+<div class="page-header">
+  <h1>{{ title }}</h1>
+  {% if desc %}<p>{{ desc }}</p>{% endif %}
+</div>
+{% endmacro %}

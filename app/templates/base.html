@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}AniVerse{% endblock %} — AniVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f97316'/><text y='.85em' x='18' font-size='68' font-family='system-ui' font-weight='700' fill='white'>A</text></svg>">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="{{ url_for('index') }}" class="navbar-brand">AniVerse</a>
+    <ul class="navbar-nav">
+      {% if current_user.is_authenticated %}
+        <li style="margin-left:auto; display:flex; align-items:center">
+          <a href="{{ url_for('usuario.perfil') }}" class="nav-user-link" style="padding:0 0.8rem; height:52px; display:flex; align-items:center; border-bottom:2px solid transparent">
+            {% if current_user.foto|default('') %}
+              <img src="{{ url_for('static', filename='uploads/' + current_user.foto) }}" alt="{{ current_user.nick }}" class="nav-avatar">
+            {% else %}
+              <span class="nav-avatar-placeholder">{{ current_user.nick[0]|upper }}</span>
+            {% endif %}
+            <span style="font-size:0.85rem; font-weight:500; color:var(--text-2); margin-left:0.4rem">{{ current_user.nick }}</span>
+          </a>
+          <a href="{{ url_for('usuario.logout') }}" style="padding:0 0.8rem; height:52px; line-height:52px; font-size:0.85rem; font-weight:500; color:var(--text-3); border-bottom:2px solid transparent; display:block">Salir</a>
+        </li>
+      {% else %}
+        <li style="margin-left:auto; display:flex; align-items:center; gap:0.5rem">
+          <a href="{{ url_for('usuario.login') }}" style="padding:0 0.8rem; height:52px; line-height:52px; font-size:0.85rem; font-weight:500; color:var(--text-2); border-bottom:2px solid transparent; display:block">Entrar</a>
+          <a href="{{ url_for('usuario.registro') }}" class="btn btn-primary btn-sm">Registro</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container">
+        {% for cat, msg in messages %}
+          <div class="flash flash-{{ cat if cat in ['success','error','warning'] else 'warning' }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

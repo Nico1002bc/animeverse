@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Registro{% endblock %}
+{% block content %}
+<div class="auth-split">
+  <div class="auth-panel">
+    <div class="auth-form-wrap">
+      <h1 class="auth-title">Crear cuenta</h1>
+      <p class="auth-subtitle">El primer registro obtendrá privilegios de administrador.</p>
+
+      <form method="POST" action="{{ url_for('usuario.registro') }}">
+        <div class="form-group">
+          <label class="form-label" for="nick">Nombre de usuario</label>
+          <input id="nick" name="nick" type="text" class="form-control"
+                 placeholder="Mikasa27" required autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input id="email" name="email" type="email" class="form-control"
+                 placeholder="tu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Contraseña</label>
+          <input id="password" name="password" type="password" class="form-control"
+                 placeholder="••••••••" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="confirm">Repetir contraseña</label>
+          <input id="confirm" name="confirm" type="password" class="form-control"
+                 placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center">
+          Crear cuenta
+        </button>
+      </form>
+
+      <hr class="divider">
+      <p style="text-align:center; font-size:0.875rem; color:var(--text-2)">
+        ¿Ya tienes cuenta? <a href="{{ url_for('usuario.login') }}">Inicia sesión</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="auth-deco">
+    <div class="auth-deco-grid"></div>
+    <div class="auth-deco-glow"></div>
+    <div class="auth-deco-content">
+      <div class="auth-deco-brand">Ani<span>Verse</span></div>
+      <p class="auth-deco-tagline">Tu catálogo personal de anime.<br>Guarda, valora y comparte.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

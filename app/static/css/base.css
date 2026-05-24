@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg:          #0c0d10;
+  --surface:     #131417;
+  --surface-2:   #1c1d23;
+  --border:      rgba(255,255,255,0.06);
+  --border-2:    rgba(255,255,255,0.11);
+  --accent:      #f97316;
+  --accent-dim:  rgba(249,115,22,0.1);
+  --accent-2:    rgba(249,115,22,0.22);
+  --text:        #f0f1f3;
+  --text-2:      #8b8f9a;
+  --text-3:      #4a4e5c;
+  --success:     #22c55e;
+  --warning:     #f59e0b;
+  --error:       #ef4444;
+  --radius-sm:   6px;
+  --radius:      10px;
+  --radius-lg:   16px;
+  --font:        'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --ease:        cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow:      0 1px 3px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; }
+img { display: block; max-width: 100%; }
+button, input, select, textarea { font-family: inherit; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
