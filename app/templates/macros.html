@@ -1,5 +1,40 @@
 {# ── AniVerse — Jinja2 Component Macros ────────────── #}
 
+{% macro anime_card(anime, index=0) %}
+<a href="{{ url_for('anime.detalle', oid=anime.__oid__) }}" class="card-link">
+  <article class="anime-card" style="--i:{{ index }}">
+    <div class="anime-card-img-wrap">
+      {% if anime.imagen_url %}
+        <img class="anime-card-img" src="{{ anime.imagen_url }}"
+             alt="{{ anime.titulo }}" loading="lazy"
+             onerror="this.style.display='none'">
+      {% else %}
+        <div class="anime-card-img-placeholder">{{ anime.titulo[0]|upper }}</div>
+      {% endif %}
+    </div>
+    <div class="anime-card-body">
+      <div class="anime-card-title">{{ anime.titulo }}</div>
+      <div class="anime-card-meta">
+        <span class="badge badge-estado-{{ anime.estado }}">{{ anime.estado_display() }}</span>
+        <span>{{ anime.año }}</span>
+      </div>
+    </div>
+  </article>
+</a>
+{% endmacro %}
+
+
+{% macro empty_state(title, desc='', href=None, label=None) %}
+<div class="empty-state">
+  <h2>{{ title }}</h2>
+  {% if desc %}<p>{{ desc }}</p>{% endif %}
+  {% if href and label %}
+    <a href="{{ href }}" class="btn btn-primary btn-sm" style="margin-top:1.25rem">{{ label }}</a>
+  {% endif %}
+</div>
+{% endmacro %}
+
+
 {% macro page_header(title, desc=None) %}
 <div class="page-header">
   <h1>{{ title }}</h1>

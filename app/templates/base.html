@@ -15,6 +15,7 @@
     <a href="{{ url_for('index') }}" class="navbar-brand">AniVerse</a>
     <ul class="navbar-nav">
       {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('anime.lista') }}" {% if request.blueprint == 'anime' %}class="active"{% endif %}>Catálogo</a></li>
         <li style="margin-left:auto; display:flex; align-items:center">
           <a href="{{ url_for('usuario.perfil') }}" class="nav-user-link" style="padding:0 0.8rem; height:52px; display:flex; align-items:center; border-bottom:2px solid transparent">
             {% if current_user.foto|default('') %}
@@ -46,6 +47,17 @@
   {% endwith %}
 
   <main>{% block content %}{% endblock %}</main>
+
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal-box">
+      <h3>Confirmar acción</h3>
+      <p id="confirm-msg">Esta acción no se puede deshacer.</p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="confirm-yes">Eliminar</button>
+        <button class="btn btn-secondary" id="confirm-no">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

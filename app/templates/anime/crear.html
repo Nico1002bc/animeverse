@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Añadir anime{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Añadir anime</h1>
+    <p>Solo los administradores pueden añadir animes al catálogo.</p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST" action="{{ url_for('anime.crear') }}">
+
+      <div class="form-group">
+        <label class="form-label" for="titulo">Título *</label>
+        <input id="titulo" name="titulo" type="text" class="form-control"
+               placeholder="Attack on Titan" required value="{{ form.get('titulo','') }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="sinopsis">Sinopsis *</label>
+        <textarea id="sinopsis" name="sinopsis" class="form-control"
+                  placeholder="Resumen argumental..." rows="4" required>{{ form.get('sinopsis','') }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Géneros</label>
+        <div class="checkbox-group">
+          {% for g in generos %}
+            <div class="checkbox-pill">
+              <input type="checkbox" id="g_{{ g }}" name="generos" value="{{ g }}"
+                     {% if g in (form.getlist('generos') if form else []) %}checked{% endif %}>
+              <label for="g_{{ g }}">{{ g }}</label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+        <div class="form-group">
+          <label class="form-label" for="año">Año *</label>
+          <input id="año" name="año" type="number" class="form-control"
+                 placeholder="2013" min="1960" max="2030" value="{{ form.get('año','') }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="episodios">Episodios</label>
+          <input id="episodios" name="episodios" type="number" class="form-control"
+                 placeholder="25" min="1" value="{{ form.get('episodios','') }}">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+        <div class="form-group">
+          <label class="form-label" for="estado">Estado</label>
+          <select id="estado" name="estado" class="form-control">
+            {% for key, label in estados.items() %}
+              <option value="{{ key }}" {% if form.get('estado','') == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tipo">Tipo</label>
+          <select id="tipo" name="tipo" class="form-control">
+            {% for key, label in tipos.items() %}
+              <option value="{{ key }}" {% if form.get('tipo','serie') == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="trailer_url">URL del tráiler</label>
+        <input id="trailer_url" name="trailer_url" type="url" class="form-control"
+               placeholder="https://www.youtube.com/watch?v=..." value="{{ form.get('trailer_url','') }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="imagen_url">URL de imagen</label>
+        <input id="imagen_url" name="imagen_url" type="url" class="form-control"
+               placeholder="https://..." value="{{ form.get('imagen_url','') }}">
+        <img id="img-preview" alt="Vista previa">
+      </div>
+
+      <div style="display:flex; gap:0.75rem; margin-top:0.5rem">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('anime.lista') }}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

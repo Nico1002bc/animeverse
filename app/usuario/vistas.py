@@ -25,7 +25,7 @@ def _extension_valida(nombre):
 def login():
     """Muestra el formulario de login y autentica al usuario."""
     if flask_login.current_user.is_authenticated:
-        return flask.redirect(flask.url_for("usuario.perfil"))
+        return flask.redirect(flask.url_for("anime.lista"))
 
     if flask.request.method == "POST":
         email = flask.request.form.get("email", "").strip()
@@ -37,7 +37,7 @@ def login():
                     flask.flash("Tu cuenta ha sido desactivada. Contacta con un administrador.", "error")
                 else:
                     flask_login.login_user(usuario)
-                    return flask.redirect(flask.url_for("usuario.perfil"))
+                    return flask.redirect(flask.url_for("anime.lista"))
             else:
                 flask.flash("Email o contraseña incorrectos.", "error")
         except Exception as ex:
@@ -50,7 +50,7 @@ def login():
 def registro():
     """Muestra el formulario de registro y crea un nuevo usuario."""
     if flask_login.current_user.is_authenticated:
-        return flask.redirect(flask.url_for("usuario.perfil"))
+        return flask.redirect(flask.url_for("anime.lista"))
 
     if flask.request.method == "POST":
         email = flask.request.form.get("email", "").strip()
@@ -151,7 +151,7 @@ def editar_perfil():
 
             srp.save(usuario)
             flask.flash("Perfil actualizado correctamente.", "success")
-            return flask.redirect(flask.url_for("usuario.perfil"))
+            return flask.redirect(flask.url_for("anime.lista"))
 
         except Exception as ex:
             flask.flash(f"Error al actualizar perfil: {ex}", "error")

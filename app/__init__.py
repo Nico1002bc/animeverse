@@ -27,11 +27,13 @@ def create_app():
         return {"notif_count": 0}
 
     from app.usuario.vistas import usuario_bp
+    from app.anime.vistas import anime_bp
 
     app.register_blueprint(usuario_bp)
+    app.register_blueprint(anime_bp)
 
     @app.route("/")
     def index():
-        return flask.redirect(flask.url_for("usuario.login"))
+        return flask.redirect(flask.url_for("anime.lista"))
 
     return app
