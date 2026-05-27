@@ -28,9 +28,11 @@ def create_app():
 
     from app.usuario.vistas import usuario_bp
     from app.anime.vistas import anime_bp
+    from app.reseña.vistas import reseña_bp
 
     app.register_blueprint(usuario_bp)
     app.register_blueprint(anime_bp)
+    app.register_blueprint(reseña_bp)
 
     @app.route("/")
     def index():

@@ -2,6 +2,7 @@ import flask
 import flask_login
 import sirope
 from .modelo import Anime
+from ..reseña.modelo import Reseña
 
 anime_bp = flask.Blueprint("anime", __name__, url_prefix="/anime")
 srp = sirope.Sirope()
@@ -25,8 +26,9 @@ def lista():
 
     try:
         todos = list(srp.load_all(Anime))
+        reseñas = list(srp.load_all(Reseña))
     except Exception:
-        todos = []
+        todos, reseñas = [], []
         flask.flash("Error al cargar el catálogo.", "error")
 
     if q:
@@ -34,8 +36,12 @@ def lista():
     if genero:
         todos = [a for a in todos if genero in (a.generos or [])]
 
+    notas_por_anime = {}
+    for r in reseñas:
+        notas_por_anime.setdefault(r.oid_anime, []).append(r.nota)
     for a in todos:
-        a._nota_media = None
+        notas = notas_por_anime.get(str(a.__oid__), [])
+        a._nota_media = round(sum(notas) / len(notas), 1) if notas else None
 
     if orden == "año_desc":
         todos.sort(key=lambda a: a.año, reverse=True)
@@ -68,7 +74,21 @@ def detalle(oid):
         flask.flash("El anime solicitado no existe.", "error")
         return flask.redirect(flask.url_for("anime.lista"))
 
-    return flask.render_template("anime/detalle.html", anime=anime, oid=oid)
+    from ..usuario.modelo import Usuario
+    try:
+        reseñas = [r for r in srp.load_all(Reseña) if r.oid_anime == oid]
+        usuarios = {str(u.__oid__): u for u in srp.load_all(Usuario)}
+    except Exception:
+        reseñas, usuarios = [], {}
+
+    ya_reseno = any(r.oid_usuario == str(flask_login.current_user.__oid__) for r in reseñas)
+
+    return flask.render_template("anime/detalle.html",
+                                 anime=anime, oid=oid,
+                                 reseñas=reseñas,
+                                 usuarios=usuarios,
+                                 puntuacion=anime.puntuacion_media(reseñas),
+                                 ya_reseno=ya_reseno)
 
 
 @anime_bp.route("/crear", methods=["GET", "POST"])

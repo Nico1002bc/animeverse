@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Editar reseña{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Editar reseña</h1>
+    <p>Editando reseña de: <a href="{{ url_for('anime.detalle', oid=reseña.oid_anime) }}">{{ anime.titulo }}</a></p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST" action="{{ url_for('reseña.editar', oid=oid) }}">
+
+      <div class="form-group">
+        <label class="form-label">Puntuación actual: {{ reseña.nota }}/5</label>
+        <div class="star-rating" id="star-rating">
+          {% for i in range(5, 0, -1) %}
+            <input type="radio" id="star{{ i }}" name="nota" value="{{ i }}" {% if reseña.nota == i %}checked{% endif %} required>
+            <label for="star{{ i }}" title="{{ i }}/5">★</label>
+          {% endfor %}
+        </div>
+        <p style="font-size:0.8rem; color:var(--text-3); margin-top:0.4rem">
+          Haz clic en las estrellas para cambiar la puntuación (1–5)
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="comentario">Comentario *</label>
+        <textarea id="comentario" name="comentario" class="form-control"
+                  placeholder="¿Qué te ha parecido?" rows="5" required>{{ reseña.comentario }}</textarea>
+      </div>
+
+      <div style="display:flex; gap:0.75rem">
+        <button type="submit" class="btn btn-primary">Actualizar reseña</button>
+        <a href="{{ url_for('anime.detalle', oid=reseña.oid_anime) }}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

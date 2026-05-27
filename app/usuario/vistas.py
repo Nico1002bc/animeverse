@@ -83,7 +83,17 @@ def registro():
 @usuario_bp.route("/perfil")
 @flask_login.login_required
 def perfil():
-    return flask.render_template("usuario/perfil.html")
+    from ..reseña.modelo import Reseña
+    from ..anime.modelo import Anime
+
+    oid_str = str(flask_login.current_user.__oid__)
+    try:
+        reseñas = [r for r in srp.load_all(Reseña) if r.oid_usuario == oid_str]
+        animes = {str(a.__oid__): a for a in srp.load_all(Anime)}
+    except Exception:
+        reseñas, animes = [], {}
+
+    return flask.render_template("usuario/perfil.html", reseñas=reseñas, animes=animes)
 
 
 @usuario_bp.route("/editar", methods=["GET", "POST"])

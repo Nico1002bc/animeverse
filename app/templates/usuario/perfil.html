@@ -23,5 +23,42 @@
     </div>
   </div>
 
+  <h2 style="font-size:1rem; font-weight:700; margin-bottom:1rem; padding-bottom:0.6rem; border-bottom:1px solid var(--border)">
+    Mis reseñas
+  </h2>
+
+  {% if reseñas %}
+    <div class="review-list" style="margin-bottom:2.5rem">
+      {% for reseña in reseñas %}
+        {% set anime = animes.get(reseña.oid_anime) %}
+        <div class="review-card">
+          <div class="review-header">
+            <h3 style="font-size:0.95rem; font-weight:600">
+              {% if anime %}
+                <a href="{{ url_for('anime.detalle', oid=reseña.oid_anime) }}">{{ anime.titulo }}</a>
+              {% else %}
+                Anime eliminado
+              {% endif %}
+            </h3>
+            <div style="display:flex; align-items:center; gap:0.75rem">
+              <span class="stars">
+                {% for i in range(1, 6) %}
+                  <span class="{{ 'star-filled' if i <= reseña.nota else 'star-empty' }}">★</span>
+                {% endfor %}
+              </span>
+              <span class="review-date">{{ reseña.fecha.strftime('%d/%m/%Y') }}</span>
+            </div>
+          </div>
+          <p class="review-text">{{ reseña.comentario }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state" style="padding:2rem">
+      <h2>Sin reseñas</h2>
+      <p>Aún no has escrito ninguna reseña.</p>
+    </div>
+  {% endif %}
+
 </div>
 {% endblock %}

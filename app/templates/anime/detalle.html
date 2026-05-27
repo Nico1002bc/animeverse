@@ -21,9 +21,17 @@
       </div>
       <h1 class="detail-title">{{ anime.titulo }}</h1>
 
-      <div style="color:var(--text-2); font-size:0.9rem; margin-bottom:1rem">
-        {{ anime.año }}
-        {% if anime.episodios %}· {{ anime.episodios }} episodios{% endif %}
+      <div style="display:flex; gap:1.5rem; align-items:center; margin-bottom:1rem; flex-wrap:wrap">
+        {% if puntuacion %}
+          <div>
+            <span class="score-big">{{ puntuacion }}</span>
+            <span style="color:var(--text-3); font-size:0.8rem">/5</span>
+          </div>
+        {% endif %}
+        <div style="color:var(--text-2); font-size:0.9rem">
+          {{ anime.año }}
+          {% if anime.episodios %}· {{ anime.episodios }} episodios{% endif %}
+        </div>
       </div>
 
       <p class="detail-synopsis">{{ anime.sinopsis }}</p>
@@ -41,16 +49,72 @@
           <a href="{{ url_for('anime.editar', oid=oid) }}" class="btn btn-secondary btn-sm">Editar</a>
           <form method="POST" action="{{ url_for('anime.borrar', oid=oid) }}" style="display:inline">
             <button type="button" class="btn btn-danger btn-sm"
-                    data-confirm="¿Eliminar '{{ anime.titulo }}'?">Eliminar</button>
+                    data-confirm="¿Eliminar '{{ anime.titulo }}' y todas sus reseñas?">Eliminar</button>
           </form>
         </div>
       {% endif %}
     </div>
   </div>
 
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem">
+    <h2 style="font-size:1.3rem; font-weight:700">Reseñas ({{ reseñas|length }})</h2>
+    {% if not ya_reseno %}
+      <a href="{{ url_for('reseña.crear', oid_anime=oid) }}" class="btn btn-primary btn-sm">Escribir reseña</a>
+    {% endif %}
+  </div>
+
+  {% if reseñas %}
+    <div class="review-list">
+      {% for r in reseñas %}
+        {% set autor = usuarios.get(r.oid_usuario) %}
+        <div class="review-card">
+          <div class="review-header">
+            <div style="display:flex; align-items:center; gap:0.6rem">
+              {% if autor and autor.foto|default('') %}
+                <img src="{{ url_for('static', filename='uploads/' + autor.foto) }}"
+                     alt="{{ autor.nick }}" class="review-avatar">
+              {% else %}
+                <div class="review-avatar-placeholder">{{ autor.nick[0]|upper if autor else '?' }}</div>
+              {% endif %}
+              <div>
+                <span class="review-author">{{ autor.nick if autor else 'Usuario eliminado' }}</span>
+                <span class="stars" style="margin-left:0.75rem">
+                  {% for i in range(1, 6) %}
+                    <span class="{{ 'star-filled' if i <= r.nota else 'star-empty' }}">★</span>
+                  {% endfor %}
+                  <strong style="color:var(--text); margin-left:4px">{{ r.nota }}/5</strong>
+                </span>
+              </div>
+            </div>
+            <div style="display:flex; gap:0.5rem; align-items:center">
+              <span class="review-date">{{ r.fecha.strftime('%d/%m/%Y') }}</span>
+              {% if r.oid_usuario == current_user.__oid__|string %}
+                <a href="{{ url_for('reseña.editar', oid=r.__oid__) }}" class="btn btn-secondary btn-sm">Editar</a>
+                <form method="POST" action="{{ url_for('reseña.borrar', oid=r.__oid__) }}">
+                  <button type="button" class="btn btn-danger btn-sm"
+                          data-confirm="¿Eliminar tu reseña?">Borrar</button>
+                </form>
+              {% elif current_user.es_admin %}
+                <form method="POST" action="{{ url_for('reseña.borrar', oid=r.__oid__) }}">
+                  <button type="button" class="btn btn-danger btn-sm"
+                          data-confirm="¿Eliminar esta reseña como admin?">Borrar</button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+          <p class="review-text">{{ r.comentario }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state" style="padding:2rem">
+      <h2>Sin reseñas todavía</h2>
+      <p>Sé el primero en opinar sobre este anime.</p>
+    </div>
+  {% endif %}
+
   <div style="margin-top:2rem">
     <a href="{{ url_for('anime.lista') }}" class="btn btn-secondary">← Volver al catálogo</a>
   </div>
-
 </div>
 {% endblock %}

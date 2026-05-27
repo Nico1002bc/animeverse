@@ -141,6 +141,18 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 }
 .pagination-info { font-size: 0.8rem; color: var(--text-2); }
 
+.star-rating { display: inline-flex; flex-direction: row-reverse; gap: 3px; }
+.star-rating input { display: none; }
+.star-rating label {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: color 0.15s;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label { color: var(--warning); }
+
 .modal-overlay {
   display: none;
   position: fixed;
