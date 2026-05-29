@@ -3,6 +3,7 @@ import flask_login
 import sirope
 from .modelo import Anime
 from ..reseña.modelo import Reseña
+from ..watchlist.modelo import EntradaWatchlist
 
 anime_bp = flask.Blueprint("anime", __name__, url_prefix="/anime")
 srp = sirope.Sirope()
@@ -77,9 +78,15 @@ def detalle(oid):
     from ..usuario.modelo import Usuario
     try:
         reseñas = [r for r in srp.load_all(Reseña) if r.oid_anime == oid]
+        oid_usuario = str(flask_login.current_user.__oid__)
+        watchlist_entrada = next(
+            (w for w in srp.load_all(EntradaWatchlist)
+             if w.oid_anime == oid and w.oid_usuario == oid_usuario),
+            None
+        )
         usuarios = {str(u.__oid__): u for u in srp.load_all(Usuario)}
     except Exception:
-        reseñas, usuarios = [], {}
+        reseñas, watchlist_entrada, usuarios = [], None, {}
 
     ya_reseno = any(r.oid_usuario == str(flask_login.current_user.__oid__) for r in reseñas)
 
@@ -88,6 +95,8 @@ def detalle(oid):
                                  reseñas=reseñas,
                                  usuarios=usuarios,
                                  puntuacion=anime.puntuacion_media(reseñas),
+                                 watchlist_entrada=watchlist_entrada,
+                                 estados_wl=EntradaWatchlist.ESTADOS,
                                  ya_reseno=ya_reseno)
 
 

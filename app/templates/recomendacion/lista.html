@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Recomendaciones recibidas{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem">
+    <div>
+      <h1>Recomendaciones</h1>
+      <p>Lo que otros usuarios te han sugerido.</p>
+    </div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+      <a href="{{ url_for('recomendacion.para_ti') }}" class="btn btn-secondary">Para ti</a>
+      <a href="{{ url_for('recomendacion.enviar') }}" class="btn btn-primary">Enviar recomendación</a>
+    </div>
+  </div>
+
+  {% if recs %}
+    <div class="review-list">
+      {% for r in recs %}
+        {% set anime = animes.get(r.oid_anime) %}
+        {% set origen = usuarios.get(r.oid_origen) %}
+        <div class="review-card" {% if not r.leida %}style="border-color: var(--accent)"{% endif %}>
+          <div class="review-header">
+            <div style="display:flex; align-items:center; gap:0.6rem">
+              {# Avatar del remitente #}
+              {% if origen and origen.foto|default('') %}
+                <img src="{{ url_for('static', filename='uploads/' + origen.foto) }}"
+                     alt="{{ origen.nick }}" class="review-avatar">
+              {% else %}
+                <div class="review-avatar-placeholder">{{ origen.nick[0]|upper if origen else '?' }}</div>
+              {% endif %}
+              <div>
+                {% if not r.leida %}
+                  <span class="badge badge-genre" style="margin-right:0.4rem; font-size:0.6rem">NUEVA</span>
+                {% endif %}
+                <span class="review-author">
+                  De: {{ origen.nick if origen else 'Usuario eliminado' }}
+                </span>
+                {% if anime %}
+                  → <a href="{{ url_for('anime.detalle', oid=r.oid_anime) }}">{{ anime.titulo }}</a>
+                {% else %}
+                  → <em style="color:var(--text-3)">Anime eliminado</em>
+                {% endif %}
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem">
+              <span class="review-date">{{ r.fecha.strftime('%d/%m/%Y') }}</span>
+              <form method="POST" action="{{ url_for('recomendacion.borrar', oid=r.__oid__) }}">
+                <button type="button" class="btn btn-danger btn-sm"
+                        data-confirm="¿Eliminar esta recomendación?">Borrar</button>
+              </form>
+            </div>
+          </div>
+          <p class="review-text">{{ r.motivo }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon"></div>
+      <h2>Sin recomendaciones</h2>
+      <p>Aún no has recibido ninguna. Prueba las <a href="{{ url_for('recomendacion.para_ti') }}">sugerencias automáticas</a>.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

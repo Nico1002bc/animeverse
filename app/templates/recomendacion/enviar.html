@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Enviar recomendación{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Enviar recomendación</h1>
+    <p>Comparte un anime con otro usuario de la plataforma.</p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST" action="{{ url_for('recomendacion.enviar') }}">
+
+      <div class="form-group">
+        <label class="form-label" for="oid_anime">Anime *</label>
+        <select id="oid_anime" name="oid_anime" class="form-control" required>
+          <option value="">– Selecciona un anime –</option>
+          {% for a in animes %}
+            <option value="{{ a.__oid__ }}"
+              {% if request.args.get('anime') == a.__oid__|string %}selected{% endif %}>
+              {{ a.titulo }} ({{ a.año }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {# ---- Búsqueda de usuario por AJAX ---- #}
+      <div class="form-group">
+        <label class="form-label" for="buscar-user">Destinatario *</label>
+        <input id="buscar-user" type="text" class="form-control"
+               placeholder="Buscar usuario por nombre o email..." autocomplete="off">
+        <input type="hidden" id="oid_destino" name="oid_destino" required>
+        <div id="user-results" class="user-search-results"></div>
+        <div id="user-selected" class="user-selected" style="display:none">
+          <span id="user-selected-name"></span>
+          <button type="button" id="user-clear" class="btn btn-secondary btn-sm" style="padding:0.2rem 0.5rem; font-size:0.7rem">X</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="motivo">Motivo *</label>
+        <textarea id="motivo" name="motivo" class="form-control"
+                  placeholder="¿Por qué recomiendas este anime?" rows="4" required></textarea>
+      </div>
+
+      <div style="display:flex; gap:0.75rem">
+        <button type="submit" class="btn btn-primary">Enviar</button>
+        <a href="{{ url_for('anime.lista') }}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function() {
+  const input = document.getElementById('buscar-user');
+  const results = document.getElementById('user-results');
+  const hidden = document.getElementById('oid_destino');
+  const selected = document.getElementById('user-selected');
+  const selectedName = document.getElementById('user-selected-name');
+  const clearBtn = document.getElementById('user-clear');
+  let timer = null;
+
+  input.addEventListener('input', function() {
+    clearTimeout(timer);
+    const q = this.value.trim();
+    if (q.length < 2) {
+      results.innerHTML = '';
+      results.style.display = 'none';
+      return;
+    }
+    timer = setTimeout(() => {
+      fetch(`{{ url_for('recomendacion.buscar_usuario') }}?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.length === 0) {
+            results.innerHTML = '<div class="user-search-item" style="color:var(--text-3)">Sin resultados</div>';
+          } else {
+            results.innerHTML = data.map(u => `
+              <div class="user-search-item" data-oid="${u.oid}" data-nick="${u.nick}">
+                ${u.foto
+                  ? `<img src="/static/uploads/${u.foto}" class="user-search-avatar">`
+                  : `<span class="user-search-avatar-placeholder">${u.nick[0].toUpperCase()}</span>`
+                }
+                <div>
+                  <div style="font-weight:600; font-size:0.85rem">${u.nick}</div>
+                  <div style="font-size:0.75rem; color:var(--text-3)">${u.email}</div>
+                </div>
+              </div>
+            `).join('');
+          }
+          results.style.display = 'block';
+
+          // Click en resultado
+          results.querySelectorAll('[data-oid]').forEach(item => {
+            item.addEventListener('click', () => {
+              hidden.value = item.dataset.oid;
+              selectedName.textContent = item.dataset.nick;
+              selected.style.display = 'flex';
+              input.style.display = 'none';
+              results.style.display = 'none';
+            });
+          });
+        })
+        .catch(() => {
+          results.innerHTML = '<div class="user-search-item" style="color:var(--error)">Error de búsqueda</div>';
+          results.style.display = 'block';
+        });
+    }, 300);
+  });
+
+  // Limpiar selección
+  clearBtn.addEventListener('click', () => {
+    hidden.value = '';
+    selected.style.display = 'none';
+    input.style.display = 'block';
+    input.value = '';
+    input.focus();
+  });
+
+  // Cerrar resultados al hacer clic fuera
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.form-group')) {
+      results.style.display = 'none';
+    }
+  });
+})();
+</script>
+{% endblock %}

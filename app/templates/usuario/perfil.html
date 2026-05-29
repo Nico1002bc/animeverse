@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import section_heading, empty_state %}
 {% block title %}Mi perfil{% endblock %}
 {% block content %}
 <div class="container">
@@ -23,10 +24,7 @@
     </div>
   </div>
 
-  <h2 style="font-size:1rem; font-weight:700; margin-bottom:1rem; padding-bottom:0.6rem; border-bottom:1px solid var(--border)">
-    Mis reseñas
-  </h2>
-
+  {{ section_heading('Mis reseñas') }}
   {% if reseñas %}
     <div class="review-list" style="margin-bottom:2.5rem">
       {% for reseña in reseñas %}
@@ -37,7 +35,7 @@
               {% if anime %}
                 <a href="{{ url_for('anime.detalle', oid=reseña.oid_anime) }}">{{ anime.titulo }}</a>
               {% else %}
-                Anime eliminado
+                Anime desconocido
               {% endif %}
             </h3>
             <div style="display:flex; align-items:center; gap:0.75rem">
@@ -54,10 +52,36 @@
       {% endfor %}
     </div>
   {% else %}
-    <div class="empty-state" style="padding:2rem">
-      <h2>Sin reseñas</h2>
-      <p>Aún no has escrito ninguna reseña.</p>
+    {{ empty_state('Sin reseñas', 'Aún no has escrito ninguna reseña.') }}
+  {% endif %}
+
+  {{ section_heading('Mi watchlist') }}
+  {% if watchlist %}
+    <div style="display:flex; flex-direction:column; gap:0.75rem">
+      {% for entrada in watchlist %}
+        {% set anime = animes.get(entrada.oid_anime) %}
+        {% if anime %}
+          <div style="display:flex; align-items:center; gap:1rem; padding:0.75rem; background:var(--surface); border-radius:var(--radius); border:1px solid var(--border)">
+            {% if anime.imagen_url %}
+              <img src="{{ anime.imagen_url }}" alt="{{ anime.titulo }}"
+                   style="width:40px; height:56px; object-fit:cover; border-radius:4px; flex-shrink:0"
+                   onerror="this.style.display='none'">
+            {% else %}
+              <div style="width:40px; height:56px; background:var(--surface-2); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--text-3); font-weight:700">{{ anime.titulo[0]|upper }}</div>
+            {% endif %}
+            <div style="flex:1; min-width:0">
+              <a href="{{ url_for('anime.detalle', oid=anime.__oid__) }}"
+                 style="font-weight:600; font-size:0.9rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block">
+                {{ anime.titulo }}
+              </a>
+            </div>
+            <span class="badge badge-estado-{{ entrada.estado }}">{{ entrada.estado_display() }}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
     </div>
+  {% else %}
+    {{ empty_state('Watchlist vacía', 'Añade animes desde el catálogo.', url_for('anime.lista'), 'Explorar catálogo') }}
   {% endif %}
 
 </div>

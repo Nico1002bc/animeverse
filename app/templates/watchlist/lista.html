@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% from "macros.html" import empty_state %}
+{% block title %}Mi Watchlist{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Mi Watchlist</h1>
+    <p>Tu seguimiento personal de anime.</p>
+  </div>
+
+  {% set total = namespace(n=0) %}
+  {% for key, entradas in por_estado.items() %}
+    {% set total.n = total.n + entradas|length %}
+  {% endfor %}
+
+  {% if total.n == 0 %}
+    {{ empty_state('Tu watchlist está vacía', 'Añade animes desde el catálogo.', url_for('anime.lista'), 'Explorar catálogo') }}
+  {% else %}
+    {% for key in ['viendo', 'planificado', 'completado', 'en_espera', 'abandonado'] %}
+      {% set entradas = por_estado.get(key, []) %}
+      {% if entradas %}
+        <div class="wl-section">
+          <div class="wl-section-title">{{ estados[key] }} <span class="wl-count">{{ entradas|length }}</span></div>
+          <div class="wl-list">
+            {% for entrada, anime in entradas %}
+              {% set eid = entrada.__oid__|string %}
+              {% set ep_actual = entrada.episodio_actual|default(0) %}
+              {% set ep_total  = anime.episodios %}
+              <div class="wl-item">
+
+                {# Thumbnail #}
+                <a href="{{ url_for('anime.detalle', oid=entrada.oid_anime) }}" class="wl-thumb-link">
+                  {% if anime.imagen_url %}
+                    <img class="wl-thumb" src="{{ anime.imagen_url }}" alt="{{ anime.titulo }}"
+                         onerror="this.parentElement.innerHTML='<div class=wl-thumb-ph>{{ anime.titulo[0]|upper }}</div>'">
+                  {% else %}
+                    <div class="wl-thumb-ph">{{ anime.titulo[0]|upper }}</div>
+                  {% endif %}
+                </a>
+
+                {# Info #}
+                <div class="wl-info">
+                  <a href="{{ url_for('anime.detalle', oid=entrada.oid_anime) }}" class="wl-title">{{ anime.titulo }}</a>
+                  {% if ep_total %}
+                    <div class="wl-progress">
+                      <div class="wl-progress-bar" style="width:{{ [(ep_actual / ep_total * 100), 100]|min }}%"></div>
+                    </div>
+                  {% endif %}
+                </div>
+
+                {# Episodios #}
+                <form method="POST" action="{{ url_for('watchlist.progreso', oid=entrada.__oid__) }}"
+                      id="ep-form-{{ eid }}" class="wl-ep-form">
+                  <input type="hidden" name="episodio_actual" id="ep-val-{{ eid }}"
+                         value="{{ ep_actual }}" data-max="{{ ep_total or '' }}">
+                  <div class="wl-ep-row">
+                    <button type="button" class="wl-ep-btn" onclick="stepEp('{{ eid }}', -1)">−</button>
+                    <span class="wl-ep-num">
+                      <span id="ep-disp-{{ eid }}">{{ ep_actual }}</span>{% if ep_total %}<span class="wl-ep-sep">/ {{ ep_total }}</span>{% endif %}
+                    </span>
+                    <button type="button" class="wl-ep-btn" onclick="stepEp('{{ eid }}', 1)">+</button>
+                  </div>
+                </form>
+
+                {# Estado #}
+                <form method="POST" action="{{ url_for('watchlist.cambiar_estado', oid=entrada.__oid__) }}" class="wl-estado-form">
+                  <select name="estado" class="wl-estado-select" onchange="this.form.submit()">
+                    {% for k, label in estados.items() %}
+                      <option value="{{ k }}" {% if k == entrada.estado %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+
+                {# Quitar #}
+                <form method="POST" action="{{ url_for('watchlist.borrar', oid=entrada.__oid__) }}">
+                  <button type="button" class="wl-remove-btn"
+                          data-confirm="¿Quitar '{{ anime.titulo }}' de tu watchlist?"
+                          title="Quitar">✕</button>
+                </form>
+
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<script>
+const _epTimers = {};
+
+function stepEp(eid, delta) {
+  const input = document.getElementById('ep-val-' + eid);
+  const disp  = document.getElementById('ep-disp-' + eid);
+  const max   = input.dataset.max ? parseInt(input.dataset.max) : Infinity;
+  let val = Math.max(0, Math.min(parseInt(input.value) + delta, max));
+  input.value = val;
+  disp.textContent = val;
+  clearTimeout(_epTimers[eid]);
+  _epTimers[eid] = setTimeout(() => {
+    document.getElementById('ep-form-' + eid).submit();
+  }, 1200);
+}
+
+function editEp(eid) {
+  const disp  = document.getElementById('ep-disp-' + eid);
+  const input = document.getElementById('ep-val-' + eid);
+  const max   = input.dataset.max ? parseInt(input.dataset.max) : 9999;
+  const cur   = parseInt(input.value);
+
+  const field = document.createElement('input');
+  field.type  = 'number';
+  field.value = cur;
+  field.min   = 0;
+  field.max   = max;
+  field.className = 'wl-ep-input';
+
+  disp.replaceWith(field);
+  field.focus();
+  field.select();
+
+  function commit() {
+    let val = Math.max(0, Math.min(parseInt(field.value) || 0, max));
+    input.value = val;
+    const span = document.createElement('span');
+    span.id = 'ep-disp-' + eid;
+    span.textContent = val;
+    span.title = 'Click para editar';
+    span.onclick = () => editEp(eid);
+    field.replaceWith(span);
+    clearTimeout(_epTimers[eid]);
+    document.getElementById('ep-form-' + eid).submit();
+  }
+
+  field.addEventListener('blur', commit);
+  field.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); field.blur(); }
+    if (e.key === 'Escape') {
+      const span = document.createElement('span');
+      span.id = 'ep-disp-' + eid;
+      span.textContent = cur;
+      span.title = 'Click para editar';
+      span.onclick = () => editEp(eid);
+      field.replaceWith(span);
+    }
+  });
+}
+
+document.querySelectorAll('[id^="ep-disp-"]').forEach(el => {
+  const eid = el.id.replace('ep-disp-', '');
+  el.title = 'Click para editar';
+  el.style.cursor = 'text';
+  el.onclick = () => editEp(eid);
+});
+</script>
+{% endblock %}

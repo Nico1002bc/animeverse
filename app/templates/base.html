@@ -16,6 +16,15 @@
     <ul class="navbar-nav">
       {% if current_user.is_authenticated %}
         <li><a href="{{ url_for('anime.lista') }}" {% if request.blueprint == 'anime' %}class="active"{% endif %}>Catálogo</a></li>
+        <li><a href="{{ url_for('watchlist.lista') }}" {% if request.blueprint == 'watchlist' %}class="active"{% endif %}>Mi Lista</a></li>
+        <li>
+          <a href="{{ url_for('recomendacion.recibidas') }}" {% if request.blueprint == 'recomendacion' %}class="active"{% endif %} style="position:relative">
+            Recomendaciones
+            {% if notif_count > 0 %}
+              <span class="notif-badge">{{ notif_count }}</span>
+            {% endif %}
+          </a>
+        </li>
         <li style="margin-left:auto; display:flex; align-items:center">
           <a href="{{ url_for('usuario.perfil') }}" class="nav-user-link" style="padding:0 0.8rem; height:52px; display:flex; align-items:center; border-bottom:2px solid transparent">
             {% if current_user.foto|default('') %}

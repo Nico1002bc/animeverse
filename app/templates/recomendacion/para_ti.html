@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "macros.html" import anime_card, empty_state %}
+{% block title %}Recomendados para ti{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem">
+    <div>
+      <h1>Recomendados para ti</h1>
+      <p>Basado en los géneros que más consumes.</p>
+    </div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+      <a href="{{ url_for('recomendacion.recibidas') }}" class="btn btn-secondary">De otros usuarios</a>
+      <a href="{{ url_for('recomendacion.enviar') }}" class="btn btn-primary">Enviar recomendación</a>
+    </div>
+  </div>
+
+  {% if generos_favoritos %}
+    <div style="margin-bottom:2rem">
+      <h2 style="font-size:0.8rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-3); margin-bottom:0.75rem">
+        Tus géneros favoritos
+      </h2>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+        {% for g in generos_favoritos %}
+          <span class="badge badge-genre">
+            {{ g }}
+            <span style="color:var(--text-3); margin-left:0.3rem; font-size:0.7rem">({{ conteo_generos[g] }})</span>
+          </span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if sugerencias %}
+    <div class="anime-grid">
+      {% for anime, afinidad, nota_media in sugerencias %}
+        {{ anime_card(anime, loop.index0) }}
+      {% endfor %}
+    </div>
+  {% else %}
+    {{ empty_state('Sin sugerencias todavía', 'Añade animes a tu watchlist o escribe reseñas para que podamos recomendarte series similares.', url_for('anime.lista'), 'Explorar catálogo') }}
+  {% endif %}
+</div>
+{% endblock %}

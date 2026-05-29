@@ -17,10 +17,31 @@
       <div class="anime-card-meta">
         <span class="badge badge-estado-{{ anime.estado }}">{{ anime.estado_display() }}</span>
         <span>{{ anime.año }}</span>
+        {% if anime._nota_media is defined and anime._nota_media %}
+          <span style="color:var(--warning)">★ {{ anime._nota_media }}</span>
+        {% endif %}
       </div>
     </div>
   </article>
 </a>
+{% endmacro %}
+
+
+{% macro section_heading(text) %}
+<h2 style="font-size:1rem;font-weight:700;letter-spacing:-0.03em;margin-bottom:1rem;
+           padding-bottom:0.6rem;border-bottom:1px solid var(--border);color:var(--text)">
+  {{ text }}
+</h2>
+{% endmacro %}
+
+
+{% macro review_avatar(usuario) %}
+{% if usuario and usuario.foto|default('') %}
+  <img src="{{ url_for('static', filename='uploads/' + usuario.foto) }}"
+       alt="{{ usuario.nick }}" class="review-avatar">
+{% else %}
+  <div class="review-avatar-placeholder">{{ usuario.nick[0]|upper if usuario else '?' }}</div>
+{% endif %}
 {% endmacro %}
 
 

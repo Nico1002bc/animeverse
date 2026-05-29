@@ -24,15 +24,28 @@ def create_app():
 
     @app.context_processor
     def inject_notif_count():
-        return {"notif_count": 0}
+        if not flask_login.current_user.is_authenticated:
+            return {"notif_count": 0}
+        try:
+            from app.recomendacion.modelo import Recomendacion
+            oid = str(flask_login.current_user.__oid__)
+            count = sum(1 for r in flask.current_app.sirope.load_all(Recomendacion)
+                        if r.oid_destino == oid and not r.leida)
+        except Exception:
+            count = 0
+        return {"notif_count": count}
 
     from app.usuario.vistas import usuario_bp
     from app.anime.vistas import anime_bp
     from app.reseña.vistas import reseña_bp
+    from app.recomendacion.vistas import recomendacion_bp
+    from app.watchlist.vistas import watchlist_bp
 
     app.register_blueprint(usuario_bp)
     app.register_blueprint(anime_bp)
     app.register_blueprint(reseña_bp)
+    app.register_blueprint(recomendacion_bp)
+    app.register_blueprint(watchlist_bp)
 
     @app.route("/")
     def index():

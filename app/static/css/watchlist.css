@@ -1,0 +1,187 @@
+.wl-section { margin-bottom: 2rem; }
+
+.wl-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.wl-count {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0 0.4rem;
+  font-size: 0.65rem;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.wl-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.wl-item {
+  display: grid;
+  grid-template-columns: 44px 1fr auto auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.wl-item:last-child { border-bottom: none; }
+.wl-item:hover { background: var(--surface-2); }
+
+.wl-thumb-link { flex-shrink: 0; }
+.wl-thumb {
+  width: 44px;
+  height: 62px;
+  object-fit: cover;
+  border-radius: 5px;
+  display: block;
+}
+.wl-thumb-ph {
+  width: 44px;
+  height: 62px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+.wl-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.wl-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  transition: color 0.15s;
+}
+.wl-title:hover { color: var(--accent); }
+.wl-progress {
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 180px;
+}
+.wl-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s var(--ease);
+}
+
+.wl-ep-form { flex-shrink: 0; }
+.wl-ep-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.wl-ep-num {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  min-width: 44px;
+  text-align: center;
+}
+.wl-ep-sep { color: var(--text-3); font-weight: 400; margin-left: 1px; }
+.wl-ep-input {
+  width: 42px;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding: 0.1rem 0.2rem;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+.wl-ep-input::-webkit-inner-spin-button,
+.wl-ep-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.wl-ep-btn {
+  width: 24px; height: 24px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--text-2);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.wl-ep-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+.wl-estado-form { flex-shrink: 0; }
+.wl-estado-select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  padding: 0.3rem 0.5rem;
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 1.4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238b8f9a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.45rem center;
+}
+.wl-estado-select:hover, .wl-estado-select:focus { border-color: var(--border-2); color: var(--text); }
+
+.wl-remove-btn {
+  width: 28px; height: 28px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-3);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.wl-remove-btn:hover {
+  border-color: rgba(239,68,68,0.3);
+  color: #f87171;
+  background: rgba(239,68,68,0.07);
+}

@@ -3,6 +3,7 @@
 {% block content %}
 <div class="container">
 
+  {# ---- Hero ---- #}
   <div class="detail-hero">
     {% if anime.imagen_url %}
       <img class="detail-poster" src="{{ anime.imagen_url }}" alt="{{ anime.titulo }}"
@@ -44,18 +45,55 @@
         </div>
       {% endif %}
 
+      {# ---- Acciones admin ---- #}
       {% if current_user.es_admin %}
-        <div style="display:flex; gap:0.5rem">
+        <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem">
           <a href="{{ url_for('anime.editar', oid=oid) }}" class="btn btn-secondary btn-sm">Editar</a>
           <form method="POST" action="{{ url_for('anime.borrar', oid=oid) }}" style="display:inline">
             <button type="button" class="btn btn-danger btn-sm"
-                    data-confirm="¿Eliminar '{{ anime.titulo }}' y todas sus reseñas?">Eliminar</button>
+                    data-confirm="¿Eliminar '{{ anime.titulo }}' y todas sus reseñas y watchlists?">
+              Eliminar
+            </button>
           </form>
         </div>
       {% endif %}
+
+      {# ---- Watchlist ---- #}
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center">
+        {% if watchlist_entrada %}
+          <span class="badge badge-genre">{{ watchlist_entrada.estado_display() }}</span>
+          <form method="POST" action="{{ url_for('watchlist.cambiar_estado', oid=watchlist_entrada.__oid__) }}">
+            <select name="estado" class="form-control" style="padding:0.35rem 0.6rem; font-size:0.8rem"
+                    onchange="this.form.submit()">
+              {% for key, label in estados_wl.items() %}
+                <option value="{{ key }}" {% if key == watchlist_entrada.estado %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </form>
+          <form method="POST" action="{{ url_for('watchlist.borrar', oid=watchlist_entrada.__oid__) }}">
+            <button type="button" class="btn btn-danger btn-sm"
+                    data-confirm="¿Quitar de tu watchlist?">Quitar</button>
+          </form>
+        {% else %}
+          <form method="POST" action="{{ url_for('watchlist.anyadir', oid_anime=oid) }}"
+                style="display:flex; gap:0.5rem">
+            <select name="estado" class="form-control" style="padding:0.35rem 0.6rem; font-size:0.8rem">
+              {% for key, label in estados_wl.items() %}
+                <option value="{{ key }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">+ Mi lista</button>
+          </form>
+        {% endif %}
+
+        <a href="{{ url_for('recomendacion.enviar') }}?anime={{ oid }}" class="btn btn-secondary btn-sm">
+          Recomendar
+        </a>
+      </div>
     </div>
   </div>
 
+  {# ---- Reseñas ---- #}
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem">
     <h2 style="font-size:1.3rem; font-weight:700">Reseñas ({{ reseñas|length }})</h2>
     {% if not ya_reseno %}
@@ -70,6 +108,7 @@
         <div class="review-card">
           <div class="review-header">
             <div style="display:flex; align-items:center; gap:0.6rem">
+              {# Avatar del autor #}
               {% if autor and autor.foto|default('') %}
                 <img src="{{ url_for('static', filename='uploads/' + autor.foto) }}"
                      alt="{{ autor.nick }}" class="review-avatar">
