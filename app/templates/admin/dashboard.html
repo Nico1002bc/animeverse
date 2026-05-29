@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Panel de administración{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem">
+    <div>
+      <h1>Panel de administración</h1>
+      <p>Vista general de AniVerse.</p>
+    </div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+      <a href="{{ url_for('anime.crear') }}" class="btn btn-primary">＋ Añadir anime</a>
+      <a href="{{ url_for('admin.usuarios') }}" class="btn btn-secondary">Gestionar usuarios</a>
+    </div>
+  </div>
+
+  {# ---- Tarjetas de estadísticas ---- #}
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon"></div>
+      <div class="stat-value">{{ stats.total_animes }}</div>
+      <div class="stat-label">Animes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"></div>
+      <div class="stat-value">{{ stats.total_usuarios }}</div>
+      <div class="stat-label">Usuarios</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"></div>
+      <div class="stat-value">{{ stats.total_reseñas }}</div>
+      <div class="stat-label">Reseñas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"></div>
+      <div class="stat-value">{{ stats.total_watchlists }}</div>
+      <div class="stat-label">Watchlists</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"></div>
+      <div class="stat-value">{{ stats.total_recomendaciones }}</div>
+      <div class="stat-label">Recomendaciones</div>
+    </div>
+    {% if stats.nota_media %}
+    <div class="stat-card">
+      <div class="stat-icon"></div>
+      <div class="stat-value">{{ stats.nota_media }}</div>
+      <div class="stat-label">Nota media</div>
+    </div>
+    {% endif %}
+  </div>
+
+  {# ---- Secciones inferiores ---- #}
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-top:2rem">
+
+    {# Últimos animes #}
+    <div>
+      <h2 style="font-size:1.2rem; font-weight:700; margin-bottom:1rem">Animes en catálogo</h2>
+      {% if ultimos_animes %}
+        <div class="admin-list">
+          {% for anime in ultimos_animes %}
+            <a href="{{ url_for('anime.detalle', oid=anime.__oid__) }}" class="admin-list-item">
+              {% if anime.imagen_url %}
+                <img src="{{ anime.imagen_url }}" alt="{{ anime.titulo }}" class="admin-list-img"
+                     onerror="this.style.display='none'">
+              {% else %}
+                <div class="admin-list-img-placeholder"></div>
+              {% endif %}
+              <div>
+                <div class="admin-list-title">{{ anime.titulo }}</div>
+                <div class="admin-list-meta">
+                  <span class="badge badge-estado-{{ anime.estado }}">{{ anime.estado_display() }}</span>
+                  {{ anime.año }}
+                  {% if anime.episodios %}· {{ anime.episodios }} ep.{% endif %}
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+        <a href="{{ url_for('anime.lista') }}" class="btn btn-secondary btn-sm" style="margin-top:1rem">
+          Ver catálogo completo →
+        </a>
+      {% else %}
+        <p style="color:var(--text-3)">No hay animes en el catálogo.</p>
+      {% endif %}
+    </div>
+
+    {# Usuarios más activos #}
+    <div>
+      <h2 style="font-size:1.2rem; font-weight:700; margin-bottom:1rem">Usuarios más activos</h2>
+      {% if top_usuarios %}
+        <div class="admin-list">
+          {% for usuario, count in top_usuarios %}
+            <div class="admin-list-item">
+              <div class="admin-list-avatar">{{ usuario.nick[0]|upper }}</div>
+              <div>
+                <div class="admin-list-title">{{ usuario.nick }}</div>
+                <div class="admin-list-meta">{{ count }} reseña{{ 's' if count != 1 }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="color:var(--text-3)">Aún no hay reseñas.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Gestión de usuarios{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem">
+    <div>
+      <h1>Gestión de usuarios</h1>
+      <p>{{ usuarios|length }} usuario{{ 's' if usuarios|length != 1 }} registrado{{ 's' if usuarios|length != 1 }}.</p>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">← Panel de admin</a>
+  </div>
+
+  {% if usuarios %}
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Reseñas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in usuarios %}
+            {% set es_yo = u.__oid__|string == current_user.__oid__|string %}
+            <tr class="{{ 'row-inactive' if not u.activo|default(true) }}">
+              <td>
+                <div style="display:flex; align-items:center; gap:0.6rem">
+                  <div class="admin-list-avatar">{{ u.nick[0]|upper }}</div>
+                  <span class="user-nick">{{ u.nick }}{% if es_yo %} <em style="color:var(--text-3); font-size:0.75rem">(tú)</em>{% endif %}</span>
+                </div>
+              </td>
+              <td>{{ u.email }}</td>
+              <td>
+                {% if u.es_admin %}
+                  <span class="badge badge-admin">Admin</span>
+                {% else %}
+                  <span class="badge badge-user">Usuario</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if u.activo|default(true) %}
+                  <span class="status-dot status-active"></span> Activo
+                {% else %}
+                  <span class="status-dot status-inactive"></span> Desactivado
+                {% endif %}
+              </td>
+              <td style="text-align:center">{{ reseñas_count.get(u.__oid__|string, 0) }}</td>
+              <td>
+                {% if not es_yo %}
+                  <div style="display:flex; gap:0.4rem; flex-wrap:wrap">
+                    <form method="POST" action="{{ url_for('admin.toggle_activo', oid=u.__oid__) }}">
+                      {% if u.activo|default(true) %}
+                        <button type="button" class="btn btn-secondary btn-sm"
+                                data-confirm="¿Desactivar la cuenta de '{{ u.nick }}'? No podrá iniciar sesión.">
+                          Desactivar
+                        </button>
+                      {% else %}
+                        <button type="submit" class="btn btn-primary btn-sm">
+                          Activar
+                        </button>
+                      {% endif %}
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.borrar_usuario', oid=u.__oid__) }}">
+                      <button type="button" class="btn btn-danger btn-sm"
+                              data-confirm="¿Eliminar a '{{ u.nick }}' y todos sus datos (reseñas, watchlist, recomendaciones)?">
+                        Eliminar
+                      </button>
+                    </form>
+                  </div>
+                {% else %}
+                  <span style="color:var(--text-3); font-size:0.8rem">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon"></div>
+      <h2>Sin usuarios</h2>
+      <p>Aún no hay usuarios registrados en la plataforma.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

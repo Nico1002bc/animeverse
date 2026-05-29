@@ -17,6 +17,9 @@
       {% if current_user.is_authenticated %}
         <li><a href="{{ url_for('anime.lista') }}" {% if request.blueprint == 'anime' %}class="active"{% endif %}>Catálogo</a></li>
         <li><a href="{{ url_for('watchlist.lista') }}" {% if request.blueprint == 'watchlist' %}class="active"{% endif %}>Mi Lista</a></li>
+        {% if current_user.es_admin %}
+          <li><a href="{{ url_for('admin.dashboard') }}" {% if request.blueprint == 'admin' %}class="active"{% endif %}>Admin</a></li>
+        {% endif %}
         <li>
           <a href="{{ url_for('recomendacion.recibidas') }}" {% if request.blueprint == 'recomendacion' %}class="active"{% endif %} style="position:relative">
             Recomendaciones

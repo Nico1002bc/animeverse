@@ -40,12 +40,22 @@ def create_app():
     from app.reseña.vistas import reseña_bp
     from app.recomendacion.vistas import recomendacion_bp
     from app.watchlist.vistas import watchlist_bp
+    from app.admin.vistas import admin_bp
 
     app.register_blueprint(usuario_bp)
     app.register_blueprint(anime_bp)
     app.register_blueprint(reseña_bp)
     app.register_blueprint(recomendacion_bp)
     app.register_blueprint(watchlist_bp)
+    app.register_blueprint(admin_bp)
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return flask.render_template("errors/404.html"), 404
+
+    @app.errorhandler(500)
+    def server_error(e):
+        return flask.render_template("errors/500.html"), 500
 
     @app.route("/")
     def index():

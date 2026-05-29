@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Error interno{% endblock %}
+{% block content %}
+<div class="container" style="text-align:center; padding:5rem 2rem">
+  <h1 style="font-size:5rem; font-weight:800; color:var(--error); letter-spacing:-0.05em; line-height:1">500</h1>
+  <p style="color:var(--text-2); font-size:1.1rem; margin:1rem 0 2rem">
+    Ha ocurrido un error interno. Puedes seguir navegando por la aplicación.
+  </p>
+  <a href="{{ url_for('index') }}" class="btn btn-primary">Volver al inicio</a>
+</div>
+{% endblock %}
